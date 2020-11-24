@@ -1,0 +1,18 @@
+Shell commands
+
+#!/bin/sh
+#Can
+
+ip link set can0 up type can bitrate 250000  restart-ms 100
+ip link set can1 up type can bitrate 250000  listen-only on restart-ms 100
+ifconfig can0 txqueuelen 65536
+ifconfig can1 txqueuelen 65536
+ifconfig can0
+ip -details -statistics link show can0
+ifconfig can1
+ip -details -statistics link show can1
+
+
+#can_down
+ifconfig can0 down
+ifconfig can1 down
