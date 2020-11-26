@@ -1,31 +1,18 @@
-
-import os
 import can
 import time
 
 
+class CanSend:
+    def _init__(self):
+        self.count = 0
+        self.bus_send = can.interface.Bus(bustype='socketcan_native', channel='can0')
+        self.msg = can.Message(arbitration_id=0x700, data=[self.count, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x12], extended_id=True)
+        self.send_task = self.bus_send.send_periodic(self.msg, 1, duration=5)
 
-
-
-count =0
-bus0 = can.interface.Bus(bustype='socketcan_native', channel='can0')
-msg = can.Message(arbitration_id=0x700,data=[count,0x01,0x02, 0x03, 0x04, 0x05,0x06, 0x12],extended_id=True)
-        
-
-
-
-try:
-    task = bus0.send_periodic(msg,1,duration=5)
-    while True:
-        #msg = can.Message(arbitration_id=0x700,data=[count,0x01,0x02, 0x03, 0x04, 0x05,0x06, 0x12],extended_id=True)
-        msg.data[0] = count
-        task.modify_data(msg)
-        count += 1
-        if count <= 5:
-                print("{}: {}".format(msg.arbitration_id, msg.data))
+    def edit_data(self):
+        self.msg.data[0] = self.count
+        self.send_task.modify_data(self.msg)
+        self.count += 1
+        if self.count <= 5:
+            print("{}: {}".format(self.msg.arbitration_id, self.msg.data))
         time.sleep(0.5)
-        
-
-
-except KeyboardInterrupt:
-    os.system('ifconfig can0 down')
